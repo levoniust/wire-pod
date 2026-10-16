@@ -61,8 +61,6 @@ func sayText(robot *vector.Vector, text string) {
 						return
 					}
 					return
-				default:
-					continue
 				}
 			}
 			// * end - modified from official vector-go-sdk
@@ -132,8 +130,6 @@ func BControl(robot *vector.Vector, ctx context.Context, start, stop chan bool) 
 					return
 				}
 				return
-			default:
-				continue
 			}
 		}
 		// * end - modified from official vector-go-sdk

@@ -68,8 +68,6 @@ func SetBControlFunctions(L *lua.LState) {
 						return
 					}
 					return
-				default:
-					continue
 				}
 			}
 			// * end - modified from official vector-go-sdk
