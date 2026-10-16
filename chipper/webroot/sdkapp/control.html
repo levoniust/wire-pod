@@ -91,6 +91,15 @@
         </div>
         <button onclick="sayText()" type="submit">Submit</button>
       <hr />
+      <h2 class="center">LLM Task</h2>
+      <p class="center"><small>Let the LLM drive Vector to do something, step by step (agent mode must be on in the knowledge graph settings). Touch Vector to stop it. Progress shows in the wire-pod log.</small></p>
+      <div class="center">
+        <input class="tinput" name="agentTask" id="agentTask" type="text" placeholder="e.g. look around and find the cube" />
+      </div>
+      <button onclick="startAgentTask()" type="submit">Start</button>
+      <button onclick="stopAgentTask()" type="submit">Stop</button>
+      <div class="center" id="agentStatus"></div>
+      <hr />
       <h2 class="center">Play Audio</h2>
         <div class="center">
           <input type="file" id="fileInput" accept=".wav">

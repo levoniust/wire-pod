@@ -166,6 +166,12 @@
                 <input type="checkbox" id="commandYes" name="commandDoselect" />
                 <label class="checkbox-label" for="commandYes">
                   Allow the LLM to make the robot perform animations and other actions during the response.
+                </label><br />
+                <input type="checkbox" id="agentYes" name="agentselect" />
+                <label class="checkbox-label" for="agentYes">
+                  Agent mode (experimental): let the LLM drive Vector, move its head and lift, and look through the camera
+                  to carry out tasks like "go to your charger" or "look around and tell me what you see". Needs the box
+                  above and a model that supports tool calls (vision helps). Touch Vector to stop a task.
                 </label>
               </span>
               <span id="saveChatInput" style="display: none">

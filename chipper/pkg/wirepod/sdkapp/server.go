@@ -20,6 +20,7 @@ import (
 	"github.com/kercre123/wire-pod/chipper/pkg/logger"
 	"github.com/kercre123/wire-pod/chipper/pkg/scripting"
 	"github.com/kercre123/wire-pod/chipper/pkg/vars"
+	wirepod_ttr "github.com/kercre123/wire-pod/chipper/pkg/wirepod/ttr"
 )
 
 var serverFiles string = "./webroot/sdkapp"
@@ -242,6 +243,25 @@ func SdkapiHandler(w http.ResponseWriter, r *http.Request) {
 	case r.URL.Path == "/api-sdk/release_behavior_control":
 		robots[robotIndex].BcAssumption = false
 		fmt.Fprintf(w, "success")
+		return
+	case r.URL.Path == "/api-sdk/agent_task":
+		// Hands the robot to the LLM for a physical task; progress goes to the wire-pod log.
+		if robots[robotIndex].BcAssumption {
+			fmt.Fprint(w, "error: release behavior control first")
+			return
+		}
+		if err := wirepod_ttr.StartAgentTask(robot, r.FormValue("task")); err != nil {
+			fmt.Fprint(w, "error: "+err.Error())
+			return
+		}
+		fmt.Fprint(w, "success")
+		return
+	case r.URL.Path == "/api-sdk/agent_stop":
+		if wirepod_ttr.StopAgentTask(robot.Cfg.SerialNo) {
+			fmt.Fprint(w, "success")
+		} else {
+			fmt.Fprint(w, "no task is running")
+		}
 		return
 	case r.URL.Path == "/api-sdk/say_text":
 		if len([]rune(r.FormValue("text"))) >= 600 {

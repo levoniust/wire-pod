@@ -296,6 +296,7 @@ function sendKGAPIKey() {
     openai_voice_with_english: false,
     save_chat: false,
     commands_enable: false,
+    agent_enable: false,
     endpoint: "",
   };
   if (provider === "openai") {
@@ -304,6 +305,7 @@ function sendKGAPIKey() {
     data.intentgraph = getE("intentyes").checked
     data.save_chat = getE("saveChatYes").checked
     data.commands_enable = getE("commandYes").checked
+    data.agent_enable = getE("agentYes").checked
     data.openai_voice = getE("openaiVoice").value
     data.openai_voice_with_english = getE("voiceEnglishYes").checked
   } else if (provider === "custom") {
@@ -314,6 +316,7 @@ function sendKGAPIKey() {
     data.intentgraph = getE("intentyes").checked
     data.save_chat = getE("saveChatYes").checked
     data.commands_enable = getE("commandYes").checked
+    data.agent_enable = getE("agentYes").checked
   } else if (provider === "together") {
     data.key = getE("togetherKey").value;
     data.model = getE("togetherModel").value;
@@ -321,6 +324,7 @@ function sendKGAPIKey() {
     data.intentgraph = getE("intentyes").checked;
     data.save_chat = getE("saveChatYes").checked
     data.commands_enable = getE("commandYes").checked
+    data.agent_enable = getE("agentYes").checked
   } else if (provider === "houndify") {
     data.key = getE("houndKey").value;
     data.id = getE("houndID").value;
@@ -363,6 +367,7 @@ function updateKGAPI() {
         getE("openAIPrompt").value = data.openai_prompt;
         getE("openaiVoice").value = data.openai_voice;
         getE("commandYes").checked = data.commands_enable
+        getE("agentYes").checked = data.agent_enable
         getE("intentyes").checked = data.intentgraph
         getE("saveChatYes").checked = data.save_chat
         getE("voiceEnglishYes").checked = data.openai_voice_with_english
@@ -371,6 +376,7 @@ function updateKGAPI() {
         getE("togetherModel").value = data.model;
         getE("togetherAIPrompt").value = data.openai_prompt;
         getE("commandYes").checked = data.commands_enable
+        getE("agentYes").checked = data.agent_enable
         getE("intentyes").checked = data.intentgraph
         getE("saveChatYes").checked = data.save_chat
       } else if (data.provider === "custom") {
@@ -379,6 +385,7 @@ function updateKGAPI() {
         getE("customAIPrompt").value = data.openai_prompt;
         getE("customAIEndpoint").value = data.endpoint;
         getE("commandYes").checked = data.commands_enable
+        getE("agentYes").checked = data.agent_enable
         getE("intentyes").checked = data.intentgraph
         getE("saveChatYes").checked = data.save_chat
       } else if (data.provider === "houndify") {
