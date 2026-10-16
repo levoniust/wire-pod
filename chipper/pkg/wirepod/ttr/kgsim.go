@@ -580,8 +580,6 @@ func KGSim(esn string, textToSay string) error {
 						return
 					}
 					return
-				default:
-					continue
 				}
 			}
 			// * end - modified from official vector-go-sdk
