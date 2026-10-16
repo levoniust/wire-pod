@@ -30,6 +30,8 @@ const (
 	ActionNewRequest = 4
 	// arg: sound file
 	ActionPlaySound = 4
+	// arg: the task, in plain words
+	ActionDoTask = 6
 )
 
 var animationMap [][2]string = [][2]string{
@@ -132,6 +134,13 @@ var ValidLLMCommands []LLMCommand = []LLMCommand{
 		Action:          ActionNewRequest,
 		SupportedModels: []string{"all"},
 	},
+	{
+		Command:         "doTask",
+		Description:     "Hands control of your body to a step-by-step planner that can drive, turn, look through the camera, move your head and lift, and drive onto the charger. Use it when the user asks you to physically do something, like 'go find my shoes', 'drive to the charger' or 'look around and tell me what you see'. The parameter is the task in plain words. Say a short sentence first, then use the command. It ENDS your response.",
+		ParamChoices:    "any physical task, described in plain words",
+		Action:          ActionDoTask,
+		SupportedModels: []string{"all"},
+	},
 	// {
 	// 	Command:      "playSound",
 	// 	Description:  "Plays a sound on the robot.",
@@ -154,6 +163,9 @@ func CreatePrompt(origPrompt string, model string, isKG bool) string {
 	if vars.APIConfig.Knowledge.CommandsEnable {
 		prompt = prompt + "\n\n" + "You are running ON an Anki Vector robot. You have a set of commands. If you include an emoji, I will make you start over. If you want to use a command but it doesn't exist or your desired parameter isn't in the list, avoid using the command. The format is {{command||parameter}}. You can embed these in sentences. Example: \"User: How are you feeling? | Response: \"{{playAnimationWI||sad}} I'm feeling sad...\". Square brackets ([]) are not valid.\n\nUse the playAnimation or playAnimationWI commands if you want to express emotion! You are very animated and good at following instructions. Animation takes precendence over words. You are to include many animations in your response.\n\nHere is every valid command:"
 		for _, cmd := range ValidLLMCommands {
+			if cmd.Action == ActionDoTask && !vars.APIConfig.Knowledge.AgentEnable {
+				continue
+			}
 			if ModelIsSupported(cmd, model) {
 				promptAppendage := "\n\nCommand Name: " + cmd.Command + "\nDescription: " + cmd.Description + "\nParameter choices: " + cmd.ParamChoices
 				prompt = prompt + promptAppendage
@@ -218,6 +230,9 @@ func GetActionsFromString(input string) []RobotAction {
 
 func CmdParamToAction(cmd, param string) RobotAction {
 	for _, command := range ValidLLMCommands {
+		if command.Action == ActionDoTask && !vars.APIConfig.Knowledge.AgentEnable {
+			continue
+		}
 		if cmd == command.Command {
 			return RobotAction{
 				Action:    command.Action,
@@ -639,6 +654,15 @@ func PerformActions(msgs []openai.ChatCompletionMessage, actions []RobotAction, 
 			DoPlayAnimationWI(action.Parameter, robot)
 		case action.Action == ActionNewRequest:
 			go DoNewRequest(robot)
+			return true
+		case action.Action == ActionDoTask:
+			// The task runs after this response ends, so the knowledge graph flow has released the robot first.
+			go func(goal string) {
+				time.Sleep(time.Second)
+				if err := StartAgentTask(robot, goal); err != nil {
+					logger.LogUI("Agent: " + err.Error())
+				}
+			}(action.Parameter)
 			return true
 		case action.Action == ActionGetImage:
 			DoGetImage(msgs, action.Parameter, robot, stopStop)

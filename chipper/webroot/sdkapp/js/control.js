@@ -130,6 +130,23 @@ function sayText() {
   sendForm("/api-sdk/say_text?text=" + sayTextValue);
 }
 
+function agentRequest(path) {
+  fetch(path + (path.includes("?") ? "&" : "?") + "serial=" + esn, { method: "POST" })
+    .then((response) => response.text())
+    .then((text) => {
+      document.getElementById("agentStatus").innerText = text === "success" ? "OK" : text;
+    });
+}
+
+function startAgentTask() {
+  const task = document.getElementById("agentTask").value;
+  agentRequest("/api-sdk/agent_task?task=" + encodeURIComponent(task));
+}
+
+function stopAgentTask() {
+  agentRequest("/api-sdk/agent_stop");
+}
+
 keysPressed["w"] = false;
 keysPressed["a"] = false;
 keysPressed["s"] = false;
